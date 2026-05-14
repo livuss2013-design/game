@@ -25,7 +25,7 @@
         tg.ready();
         tg.expand();
 
-        // НАЗВАНИЯ ПРИЗОВ (можно менять)
+        // Проверь, чтобы здесь всегда были кавычки и запятые!
         const sectors = ["Приз 1", "Пусто", "Приз 2", "Скидка 10%", "Приз 3", "Пусто"];
         const colors = ["#FF5733", "#34495e", "#3357FF", "#F1C40F", "#9B59B6", "#34495e"];
 
@@ -49,22 +49,15 @@
             document.getElementById('spinBtn').disabled = true;
             const randomSectorIndex = Math.floor(Math.random() * sectors.length);
             const arcSize = 360 / sectors.length;
-            
-            // Расчет угла для точной остановки
             const stopAngle = 360 - (randomSectorIndex * arcSize) - (arcSize / 2);
             rotation += 1800 + stopAngle - (rotation % 360); 
-            
             canvas.style.transform = `rotate(${rotation}deg)`;
 
             setTimeout(() => {
                 const winner = sectors[randomSectorIndex];
                 confetti();
                 document.getElementById('result').innerText = "Выпало: " + winner;
-                
-                // Ждем 2 секунды, чтобы человек увидел приз, и отправляем данные боту
-                setTimeout(() => {
-                    tg.sendData(winner); // Эта команда закрывает окно и шлет текст боту
-                }, 2000);
+                setTimeout(() => { tg.sendData(winner); }, 2500);
             }, 4000);
         }
 
