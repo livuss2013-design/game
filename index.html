@@ -1,35 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <style>
-        body { background: #1c2733; color: white; text-align: center; font-family: sans-serif; margin: 0; padding: 20px; overflow: hidden; }
-        .wheel-wrap { position: relative; width: 280px; height: 280px; margin: 20px auto; }
-        .arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; 
-                 border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 25px solid #ff4136; z-index: 10; }
-        #wheel { width: 100%; height: 100%; border-radius: 50%; border: 5px solid #fff; 
-                 background: conic-gradient(
-                    #FF5733 0deg 60deg, #34495e 60deg 120deg, 
-                    #3357FF 120deg 180deg, #F1C40F 180deg 240deg, 
-                    #9B59B6 240deg 300deg, #34495e 300deg 360deg
-                 );
-                 transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1); transform: rotate(0deg); }
-        button { margin-top: 30px; padding: 15px 40px; font-size: 20px; background: #31b545; color: white; 
-                 border: none; border-radius: 12px; font-weight: bold; cursor: pointer; }
-        button:disabled { background: #555; }
-    </style>
-</head>
-<body>
-    <h3>🎡 ИСПЫТАЙ УДАЧУ!</h3>
-    <div class="wheel-wrap">
-        <div class="arrow"></div>
-        <div id="wheel"></div>
-    </div>
-    <button id="btn" onclick="spin()">КРУТИТЬ</button>
-
-    <script>
+<script>
         const tg = window.Telegram.WebApp;
         tg.ready();
         tg.expand();
@@ -40,19 +9,28 @@
         function spin() {
             if (isSpinning) return;
             isSpinning = true;
-            document.getElementById('btn').disabled = true;
             
+            const btn = document.getElementById('btn');
+            btn.disabled = true;
+            btn.style.opacity = "0.5";
+            
+            const wheel = document.getElementById('wheel');
             const randomIndex = Math.floor(Math.random() * sectors.length);
-            const deg = 1800 + (randomIndex * 60); // 5 полных оборотов + сектор
             
-            document.getElementById('wheel').style.transform = `rotate(${deg}deg)`;
+            // Крутим на 5 полных оборотов + нужный сектор
+            const totalRotation = 1800 + (randomIndex * 60); 
+            wheel.style.transform = `rotate(${totalRotation}deg)`;
 
             setTimeout(() => {
                 const winner = sectors[sectors.length - 1 - randomIndex];
-                tg.sendData(winner); // Отправка боту
-                setTimeout(() => tg.close(), 500); // Закрыть окно
+                // Сначала пробуем отправить данные
+                try {
+                    tg.sendData(winner);
+                } catch (e) {
+                    console.log("Ошибка отправки, но мы все равно закроем окно");
+                }
+                // Закрываем через секунду после остановки
+                setTimeout(() => tg.close(), 1000);
             }, 4500);
         }
     </script>
-</body>
-</html>
